@@ -69,9 +69,8 @@ app.post('/azure', function (req, res) {
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
 		
 		console.log("i am here",req.body.queryResult.intent.displayName );
-        /*switch (req.body.queryResult.intent.displayName) {
-			
-			
+        switch (req.body.queryResult.intent.displayName) {
+		
             case "createresourceonazure":
 			console.log("hi");
 			response.send(JSON.stringify({ "fulfillmentText": "hi" }));
@@ -87,7 +86,7 @@ app.post('/azure', function (req, res) {
                     }
                 }); 
             break;
-        }*/
+        }
     });
 
 });
