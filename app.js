@@ -80,8 +80,8 @@ app.post('/azure', function (req, res) {
                         response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
                     }
                 }); 
-            break;*/
-        }
+            break;
+        }*/
     });
 
 });
