@@ -58,7 +58,7 @@ var adminPassword = 'Pa$$w0rd92';
 ///////////////////////////////////////////
 //     Entrypoint for sample script      //
 ///////////////////////////////////////////
-app.post('/azure', function (req, res) {
+app.post('/azure', function (req, response) {
 
     msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials, subscriptions) {
         if (err) return console.log(err);
@@ -68,21 +68,17 @@ app.post('/azure', function (req, res) {
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
 		
-		console.log("i am here",req.body.queryResult.intent.displayName );
         switch (req.body.queryResult.intent.displayName) {
-		
-            case "createresourceonazure":
-			console.log("hi");
-			
-                 var getResourceNamee = req.body.queryResult.parameters.resourcename;
+           case "createresourceonazure":	
+				var getResourceNamee = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceNamee.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
                         console.log("error in creating resource acocount ");
-						result.send(JSON.stringify({ "fulfillmentText": "Error" }));
+						response.send(JSON.stringify({ "fulfillmentText": "Error" }));
                     } else {
                         console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
-                        result.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
+                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" + resourceGroupName}));
                     }
                 }); 
             break;
