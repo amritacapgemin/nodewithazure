@@ -75,7 +75,8 @@ app.post('/azure', function (req, res) {
                     if (err) {
                         console.log("error in creating resource acocount ");
                     } else {
-                        console.log("Resource group is created successfully");
+                        console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
+                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
                     }
                 });
             break;
