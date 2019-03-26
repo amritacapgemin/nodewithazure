@@ -67,6 +67,7 @@ app.post('/azure', function (req, res) {
         computeClient = new ComputeManagementClient(credentials, subscriptionId);
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
+		console.log("i am here",req.body.queryResult.intent.displayName );
         switch (req.body.queryResult.intent.displayName) {
 			
 			
