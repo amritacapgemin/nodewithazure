@@ -68,8 +68,12 @@ app.post('/azure', function (req, res) {
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
         switch (req.body.queryResult.intent.displayName) {
+			console.log("first");
+			response.send(JSON.stringify({ "fulfillmentText": "Error" }));
             case "createresourceonazure":
-                var getResourceNamee = req.body.queryResult.parameters.resourcename;
+			console.log("hi");
+			response.send(JSON.stringify({ "fulfillmentText": "hi" }));
+                /* var getResourceNamee = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceNamee.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
@@ -79,7 +83,7 @@ app.post('/azure', function (req, res) {
                         console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
                         response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
                     }
-                });
+                }); */
             break;
         }
     });
