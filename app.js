@@ -68,8 +68,8 @@ app.post('/azure', function (req, res) {
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
         switch (req.body.queryResult.intent.displayName) {
-			console.log("first");
-			response.send(JSON.stringify({ "fulfillmentText": "Error" }));
+			
+			
             case "createresourceonazure":
 			console.log("hi");
 			response.send(JSON.stringify({ "fulfillmentText": "hi" }));
