@@ -11,12 +11,6 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
-var server = app.listen(3000, function () {
-    var host = server.address().address
-    var port = server.address().port
-    console.log("Example app listening at http://%s:%s", host, port)
-})
-'use strict';
 
 var util = require('util');
 //var async = require('async');
@@ -67,14 +61,15 @@ app.post('/azure', function (req, res) {
         computeClient = new ComputeManagementClient(credentials, subscriptionId);
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
+		
 		console.log("i am here",req.body.queryResult.intent.displayName );
-        switch (req.body.queryResult.intent.displayName) {
+        /*switch (req.body.queryResult.intent.displayName) {
 			
 			
             case "createresourceonazure":
 			console.log("hi");
 			response.send(JSON.stringify({ "fulfillmentText": "hi" }));
-                /* var getResourceNamee = req.body.queryResult.parameters.resourcename;
+                 var getResourceNamee = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceNamee.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
@@ -84,8 +79,8 @@ app.post('/azure', function (req, res) {
                         console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
                         response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
                     }
-                }); */
-            break;
+                }); 
+            break;*/
         }
     });
 
