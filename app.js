@@ -73,16 +73,16 @@ app.post('/azure', function (req, res) {
 		
             case "createresourceonazure":
 			console.log("hi");
-			response.send(JSON.stringify({ "fulfillmentText": "hi" }));
+			
                  var getResourceNamee = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceNamee.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
                         console.log("error in creating resource acocount ");
-						response.send(JSON.stringify({ "fulfillmentText": "Error" }));
+						result.send(JSON.stringify({ "fulfillmentText": "Error" }));
                     } else {
                         console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
-                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
+                        result.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" }));
                     }
                 }); 
             break;
