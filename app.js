@@ -78,7 +78,7 @@ app.post('/azure', function (req, response) {
 						response.send(JSON.stringify({ "fulfillmentText": "Error" }));
                     } else {
                         console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
-                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully" + resourceGroupName}));
+                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully " + resourceGroupName}));
                     }
                 }); 
             break;
