@@ -45,13 +45,6 @@ var publisher = 'Canonical';
 var offer = 'UbuntuServer';
 var sku = '14.04.3-LTS';
 var osType = 'Linux';
-
-// Windows config
-//var publisher = 'microsoftwindowsserver';
-//var offer = 'windowsserver';
-//var sku = '2012-r2-datacenter';
-//var osType = 'Windows';
-
 var adminUsername = 'notadmin';
 var adminPassword = 'Pa$$w0rd92';
 
@@ -70,27 +63,86 @@ app.post('/azure', function (req, response) {
 		
         switch (req.body.queryResult.intent.displayName) {
            case "createresourceonazure":	
-				var getResourceNamee = req.body.queryResult.parameters.resourcename;
-                var resourceGroupName = getResourceNamee.toString();
+				var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
                         console.log("error in creating resource acocount ");
-						response.send(JSON.stringify({ "fulfillmentText": "Error" }));
+						response.send(JSON.stringify({ "fulfillmentText": "Error in createing resource group" }));
                     } else {
-                        console.log(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully "}));
-                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully " + resourceGroupName}));
+						console.log("hiii", result.name);
+                        response.send(JSON.stringify({ "fulfillmentText": "ResouceGroup is created successfully with name " + result.name}));
+                    }
+                }); 
+				break;
+			case "createstorageaccount":	
+				var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
+				var storageAccountName = getstorageAccountName.toString();
+				createStorageAccount(storageAccountName,resourceGroupName, function (err, result) {
+                    if (err) {
+                       response.send(JSON.stringify({ "fulfillmentText": "Error in createing storage group" }));
+                    } else {
+						console.log("hii", result)
+                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " + result.name}));
                     }
                 }); 
             break;
+			case "createvnet":	
+				var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+				var getvnetName = req.body.queryResult.parameters.vnetname;
+				var vnetName = getvnetName.toString();
+				var getsubnetName = req.body.queryResult.parameters.subnetname;
+                var subnetName = getsubnetName.toString();
+                createVnet(resourceGroupName, vnetName, subnetName, function (err, vnetInfo) {
+                    if (err) {
+                        response.send(JSON.stringify({ "fulfillmentText": "Error in createing virtual network" }));
+                    } else {
+                        console.log("Vnet is created",vnetInfo );
+						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " + result.name }));
+                    }
+                });
+                break;
         }
     });
-
 });
-
+/**Function to create resource group name*/
 function createResourceGroup(resourceGroupName, callback) {
     var groupParameters = { location: location, tags: { sampletag: 'sampleValue' } };
     console.log('\n1.Creating resource group: ' + resourceGroupName);
     return resourceClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters, callback);
+}
+/**Function to create storage account name*/
+function createStorageAccount(storageAccountName, resourceGroupName, callback) {
+    console.log('\n2.Creating storage account: ' + storageAccountName);
+    var createParameters = {
+        location: location,
+        sku: {
+            name: accType,
+        },
+        kind: 'Storage',
+        tags: {
+            tag1: 'val1',
+            tag2: 'val2'
+        }
+    };
+    return storageClient.storageAccounts.create(resourceGroupName, storageAccountName, createParameters, callback);
+}
+function createVnet(resourceGroupName, vnetName, subnetName, callback) {
+    var vnetParameters = {
+        location: location,
+        addressSpace: {
+            addressPrefixes: ['10.0.0.0/16']
+        },
+        dhcpOptions: {
+            dnsServers: ['10.1.1.1', '10.1.2.4']
+        },
+        subnets: [{ name: subnetName, addressPrefix: '10.0.0.0/24' }],
+    };
+    console.log('\n3.Creating vnet: ' + vnetName);
+    return networkClient.virtualNetworks.createOrUpdate(resourceGroupName, vnetName, vnetParameters, callback);
 }
 function _validateEnvironmentVariables() {
     var envs = [];
