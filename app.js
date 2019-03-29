@@ -70,7 +70,7 @@ app.post('/azure', function (req, response) {
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
                         console.log("error in creating resource acocount ");
-						response.send(JSON.stringify({ "fulfillmentText": "Error in createing resource group" }));
+						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
 						console.log("hiii", result.name);
                         response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " + result.name}));
@@ -84,7 +84,8 @@ app.post('/azure', function (req, response) {
 				var storageAccountName = getstorageAccountName.toString();
 				createStorageAccount(storageAccountName,resourceGroupName, function (err, result) {
                     if (err) {
-                       response.send(JSON.stringify({ "fulfillmentText": "Error in createing storage group" }));
+						console.log("hi",err )
+                       response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						console.log("hii", result)
                           response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " + result.name}));
