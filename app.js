@@ -64,16 +64,14 @@ app.post('/azure', function (req, response) {
         switch (req.body.queryResult.intent.displayName) {
            case "createresourceonazure":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
-				console.log("here", getResourceName);
                 var resourceGroupName = getResourceName.toString();
-				console.log("here1", resourceGroupName)
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
                         console.log("error in creating resource acocount ");
 						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
 						console.log("hiii", result.name);
-                        response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " + result.name}));
+                        response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
                     }
                 }); 
 				break;
@@ -84,11 +82,10 @@ app.post('/azure', function (req, response) {
 				var storageAccountName = getstorageAccountName.toString();
 				createStorageAccount(storageAccountName,resourceGroupName, function (err, result) {
                     if (err) {
-						console.log("hi",err )
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						console.log("hii", result)
-                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " + result.name}));
+                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +result.name}));
                     }
                 }); 
             break;
@@ -104,7 +101,7 @@ app.post('/azure', function (req, response) {
                         response.send(JSON.stringify({ "fulfillmentText": "Error in createing virtual network" }));
                     } else {
                         console.log("Vnet is created",vnetInfo );
-						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " + result.name }));
+						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +result.name }));
                     }
                 });
                 break;
