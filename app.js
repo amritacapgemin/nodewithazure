@@ -32,8 +32,6 @@ var clientId = process.env['CLIENT_ID'];
 var domain = process.env['DOMAIN'];
 var secret = process.env['APPLICATION_SECRET'];
 var subscriptionId = process.env['AZURE_SUBSCRIPTION_ID'];
-console.log(clientId);
-console.log(secret);
 var resourceClient, computeClient, storageClient, networkClient;
 //Sample Config
 var randomIds = {};
@@ -47,6 +45,8 @@ var sku = '14.04.3-LTS';
 var osType = 'Linux';
 var adminUsername = 'notadmin';
 var adminPassword = 'Pa$$w0rd92';
+
+var domainNameLabel = _generateRandomId('testdomainname', randomIds);
 
 ///////////////////////////////////////////
 //     Entrypoint for sample script      //
@@ -80,12 +80,11 @@ app.post('/azure', function (req, response) {
                 var resourceGroupName = getResourceName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
 				var storageAccountName = getstorageAccountName.toString();
-				createStorageAccount(storageAccountName,resourceGroupName, function (err, result) {
+				createStorageAccount(storageAccountName,resourceGroupName, function (err, storageacc) {
                     if (err) {
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
-						console.log("hii", result)
-                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +result.name}));
+                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
                     }
                 }); 
             break;
@@ -98,10 +97,25 @@ app.post('/azure', function (req, response) {
                 var subnetName = getsubnetName.toString();
                 createVnet(resourceGroupName, vnetName, subnetName, function (err, vnetInfo) {
                     if (err) {
-                        response.send(JSON.stringify({ "fulfillmentText": "Error in createing virtual network" }));
+                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating virtual network" }));
                     } else {
                         console.log("Vnet is created",vnetInfo );
-						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +result.name }));
+						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +vnetInfo.name }));
+                    }
+                });
+                break;
+			case "createpublicip":
+                var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+				var getPublicipName = req.body.queryResult.parameters.resourcename;
+                var publicIPName = getPublicipName.toString();
+                createPublicIP(resourceGroupName,publicIPName, function (err, publicIPInfo) {
+                    if (err) {
+                        console.log("error in creating publicip");
+						 response.send(JSON.stringify({ "fulfillmentText": "Error in creating public ip" }));
+                    } else {
+                        console.log("PublicIp is created" + util.inspect(publicIPInfo, { depth: null }));
+						response.send(JSON.stringify({ "fulfillmentText": "Public Ip is created successfully with name " +publicIPInfo.name }));
                     }
                 });
                 break;
@@ -130,6 +144,7 @@ function createStorageAccount(storageAccountName, resourceGroupName, callback) {
     };
     return storageClient.storageAccounts.create(resourceGroupName, storageAccountName, createParameters, callback);
 }
+/**Function to create virtual network*/
 function createVnet(resourceGroupName, vnetName, subnetName, callback) {
     var vnetParameters = {
         location: location,
@@ -143,6 +158,18 @@ function createVnet(resourceGroupName, vnetName, subnetName, callback) {
     };
     console.log('\n3.Creating vnet: ' + vnetName);
     return networkClient.virtualNetworks.createOrUpdate(resourceGroupName, vnetName, vnetParameters, callback);
+}
+/**Function to create public Ip*/
+function createPublicIP(resourceGroupName, publicIPName, callback) {
+    var publicIPParameters = {
+        location: location,
+        publicIPAllocationMethod: 'Dynamic',
+        dnsSettings: {
+            domainNameLabel: domainNameLabel
+        }
+    };
+    console.log('\n4.Creating public IP: ' + publicIPName);
+    return networkClient.publicIPAddresses.createOrUpdate(resourceGroupName, publicIPName, publicIPParameters, callback);
 }
 function _validateEnvironmentVariables() {
     var envs = [];
