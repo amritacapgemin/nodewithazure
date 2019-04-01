@@ -47,6 +47,7 @@ var adminUsername = 'notadmin';
 var adminPassword = 'Pa$$w0rd92';
 
 var domainNameLabel = _generateRandomId('testdomainname', randomIds);
+var ipConfigName = _generateRandomId('testcrpip', randomIds);
 
 ///////////////////////////////////////////
 //     Entrypoint for sample script      //
@@ -82,8 +83,10 @@ app.post('/azure', function (req, response) {
 				var storageAccountName = getstorageAccountName.toString();
 				createStorageAccount(storageAccountName,resourceGroupName, function (err, storageacc) {
                     if (err) {
+						 console.log("error in creating storage acocount", err);
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
+						 console.log("Storage accouint is created");
                           response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
                     }
                 }); 
@@ -117,6 +120,62 @@ app.post('/azure', function (req, response) {
                         console.log("PublicIp is created" + util.inspect(publicIPInfo, { depth: null }));
 						response.send(JSON.stringify({ "fulfillmentText": "Public Ip is created successfully with name " +publicIPInfo.name }));
                     }
+                });
+                break;
+			case "getSubnetInfo":
+                var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+				var getvnetName = req.body.queryResult.parameters.vnetname;
+                var vnetName = getvnetName.toString();
+				var getsubnetName = req.body.queryResult.parameters.subnetname;
+                var subnetName = getsubnetName.toString();
+                getSubnetInfo(resourceGroupName,vnetName,subnetName, function (err, subnetInfo) {
+                    if (err) {
+                        response.send(JSON.stringify({ "fulfillmentText": "To get subnetinfo" }));
+                    } else {
+                        console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
+						response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
+                    }
+                });
+                break;
+			case "findVMImage":
+				findVMImage(function (err, vmImageInfo) {
+                    if (err) {
+                        console.log("error to fetch vmimage");
+                    } else {
+                        console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));
+						response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
+                    }
+                });
+                break;
+			case "createNIC":
+                var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();	
+                var getvnetName = req.body.queryResult.parameters.vnetname;
+				var vnetName =  getvnetName.toString();
+                var getsubnetName = req.body.queryResult.parameters.subnetname;
+				var subnetName = getsubnetName.toString();
+				
+				var getnetworkInterfaceName = req.body.queryResult.parameters.nicname;
+				var networkInterfaceName =  getnetworkInterfaceName.toString();
+               
+                getSubnetInfo(resourceGroupName,vnetName, subnetName, function (err, subnetInfo) {
+                    if (err) { console.log("error in info") } else {
+                        console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }))
+                    };
+                    createPublicIP(resourceGroupName,publicIPName, function (err, publicIPInfo) {
+                        if (err) { console.log("error in info1") } else {
+                            console.log('\nCreated public IP:\n' + util.inspect(publicIPInfo, { depth: null }))
+                        };
+                        createNIC(subnetInfo, publicIPInfo, networkInterfaceName, resourceGroupName, function (err, nicInfo) {
+                            console.log("data is here" + subnetInfo + " one " + publicIPInfo + " two " + ipConfigName + " three " + networkInterfaceName + " four " + resourceGroupName)
+                            if (err) {
+                                console.log("error in info2")
+                            } else {
+                                console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }))
+                            };
+                        });
+                    });
                 });
                 break;
         }
@@ -171,6 +230,36 @@ function createPublicIP(resourceGroupName, publicIPName, callback) {
     console.log('\n4.Creating public IP: ' + publicIPName);
     return networkClient.publicIPAddresses.createOrUpdate(resourceGroupName, publicIPName, publicIPParameters, callback);
 }
+/**Function to getting subnet info*/
+function getSubnetInfo(resourceGroupName,vnetName,subnetName, callback) {
+    console.log('\nGetting subnet info for: ' + subnetName);
+    return networkClient.subnets.get(resourceGroupName, vnetName, subnetName, callback);
+}
+/**Function to find vmimage*/
+function findVMImage(callback) {
+    console.log(util.format('\nFinding a VM Image for location %s from ' +
+        'publisher %s with offer %s and sku %s', location, publisher, offer, sku));
+    return computeClient.virtualMachineImages.list(location, publisher, offer, sku, { top: 1 }, callback);
+}
+/**Function to create network interface*/
+function createNIC(subnetInfo,publicIPInfo,networkInterfaceName,resourceGroupName, callback) {
+    var nicParameters = {
+        location: location,
+        ipConfigurations: [
+            {
+                name: ipConfigName,
+                privateIPAllocationMethod: 'Dynamic',
+                subnet: subnetInfo,
+                publicIPAddress: publicIPInfo
+            }
+        ]
+    };
+    console.log('\n5.Creating Network Interface: ' + networkInterfaceName);
+    return networkClient.networkInterfaces.createOrUpdate(resourceGroupName, networkInterfaceName, nicParameters, callback);
+}
+
+
+/**Function to set env variabel*/
 function _validateEnvironmentVariables() {
     var envs = [];
     if (!process.env['CLIENT_ID']) envs.push('CLIENT_ID');
