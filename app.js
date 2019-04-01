@@ -107,7 +107,7 @@ app.post('/azure', function (req, response) {
 			case "createpublicip":
                 var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
-				var getPublicipName = req.body.queryResult.parameters.resourcename;
+				var getPublicipName = req.body.queryResult.parameters.publicipname;
                 var publicIPName = getPublicipName.toString();
                 createPublicIP(resourceGroupName,publicIPName, function (err, publicIPInfo) {
                     if (err) {
