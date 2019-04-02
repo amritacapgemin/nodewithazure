@@ -61,6 +61,7 @@ app.post('/azure', function (req, response) {
         computeClient = new ComputeManagementClient(credentials, subscriptionId);
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
+		 response.setHeader('Content-Type', 'application/json');
 		
         switch (req.body.queryResult.intent.displayName) {
            case "createresourceonazure":	
@@ -87,8 +88,10 @@ app.post('/azure', function (req, response) {
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						 console.log("Storage accouint is created");
-                          response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
+						 response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
+                          
                     }
+					
                 }); 
             break;
 			case "createvnet":	
