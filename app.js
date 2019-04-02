@@ -78,7 +78,7 @@ app.post('/azure', function (req, response) {
                 }); 
 				break;		
 			case "createstorageaccount":
-				responsedata.setHeader('Content-Type', 'application/json');			
+				response.setHeader('Content-Type', 'application/json');			
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
