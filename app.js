@@ -48,6 +48,8 @@ var adminPassword = 'Pa$$w0rd92';
 
 var domainNameLabel = _generateRandomId('testdomainname', randomIds);
 var ipConfigName = _generateRandomId('testcrpip', randomIds);
+var osDiskName = _generateRandomId('testosdisk', randomIds);
+
 
 ///////////////////////////////////////////
 //     Entrypoint for sample script      //
@@ -182,6 +184,105 @@ app.post('/azure', function (req, response) {
                     });
                 });
                 break;
+			case "createvirtualmachine":
+                var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+                var publicIPName = _generateRandomId('testpip', randomIds);
+			    var getvnetName = req.body.queryResult.parameters.virtualnetworkname;
+                var vnetName = getvnetName.toString();
+				var getsubnetName = req.body.queryResult.parameters.subnetname;
+                var subnetName = getsubnetName.toString();
+				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
+                var storageAccountName = getstorageAccountName.toString();
+				var getnetworkInterfaceName = req.body.queryResult.parameters.networkinterfacename;
+                var networkInterfaceName = getnetworkInterfaceName.toString();
+				var getvmName = req.body.queryResult.parameters.virtualmachinename;
+                var vmName = getvmName.toString();
+                getSubnetInfo(resourceGroupName, vnetName, subnetName,function (err, subnetInfo) {
+                    if (err){console.log("error1", err)} else{ 
+                    console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));} 
+                    createPublicIP(resourceGroupName,publicIPName,function (err, publicIPInfo) {
+                        if (err){console.log("error1", err)} else{ 
+                            console.log('\nCreated public IP:\n' + util.inspect(publicIPInfo, { depth: null }));} 
+                      createNIC(subnetInfo, publicIPInfo,networkInterfaceName, resourceGroupName, function (err, nicInfo) {
+                        if (err){console.log("error1", err)} else{ 
+                            console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }));} 
+                        findVMImage(function (err, vmImageInfo) {
+                            if (err){console.log("error1", err)} else{ 
+                                console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null })); }
+                             createVirtualMachine(nicInfo.id, vmImageInfo[0].name,resourceGroupName,vmName,storageAccountName, function (err, vmInfo) {
+                                console.log("one \n" +nicInfo.id+ " two\n " +vmImageInfo[0].name)
+                                if (err){console.log("error5", err)} else{ 
+                                    console.log('\nVM created\n'); }
+                            });
+                          });
+                        });
+                      });
+                    });
+            break;
+		case "getvirtualmachineinfo":
+            var getresourceGroupName = req.body.queryResult.parameters.resourcename;
+            var resourceGroupName = getresourceGroupName.toString();
+			var getvmName = req.body.queryResult.parameters.virtualmachinename;
+            var vmName = getvmName.toString();
+            computeClient.virtualMachines.get(resourceGroupName, vmName, function (err, result) {
+                if (err) {
+                  console.log(util.format('\n???????Error in Task2: while getting the VM Info:\n%s',
+                    util.inspect(err, { depth: null })));
+                    console.log(err);
+                } else {
+                  console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
+                    console.log(null, result);
+                }
+              });
+            break;
+		case "poweroffvirtualmachine":
+            var getresourceGroupName = req.body.queryResult.parameters.resourcegroupname;
+            var resourceGroupName = getresourceGroupName.toString();
+			var getvmName = req.body.queryResult.parameters.virtualmachinename;
+            var vmName = getvmName.toString();
+            computeClient.virtualMachines.powerOff(resourceGroupName, vmName, function (err, result) {
+                if (err) {
+                  console.log(util.format('\n???????Error in Task3: while powering off the VM:\n%s',
+                    util.inspect(err, { depth: null })));
+                    console.log(err);
+                } else {
+                  console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',
+                    util.inspect(result, { depth: null })));
+                    console.log(null, result);
+                }
+              });
+            break;
+		case "startvirtualmachine":
+            var getresourceGroupName = req.body.queryResult.parameters.resourcename;
+            var resourceGroupName = getresourceGroupName.toString();
+			var getvmName = req.body.queryResult.parameters.virtualmachinename;
+            var vmName = getvmName.toString();
+            computeClient.virtualMachines.start(resourceGroupName, vmName, function (err, result) {
+                if (err) {
+                  console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',
+                    util.inspect(err, { depth: null })));
+                    console.log(err);
+                } else {
+                  console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',
+                    util.inspect(result, { depth: null })));
+                    console.log(null, result);
+                }
+              });
+            break;
+		case "listallvirtualmachine":        
+            computeClient.virtualMachines.listAll(function (err, result) {
+                if (err) {
+                  console.log(util.format('\n???????Error in Task5: while listing all the vms under ' +
+                     'the current subscription:\n%s', util.inspect(err, { depth: null })));
+                     console.log(err);
+                } else {
+                  console.log(util.format('\n######End of Task5: List all the vms under the current ' +
+                    'subscription is successful.\n%s', util.inspect(result, { depth: null })));
+                    console.log(null, result);
+                }
+              });
+            break;
         }
     });
 });
@@ -260,6 +361,44 @@ function createNIC(subnetInfo,publicIPInfo,networkInterfaceName,resourceGroupNam
     };
     console.log('\n5.Creating Network Interface: ' + networkInterfaceName);
     return networkClient.networkInterfaces.createOrUpdate(resourceGroupName, networkInterfaceName, nicParameters, callback);
+}
+function createVirtualMachine(nicId,vmImageVersionNumber,resourceGroupName,vmName, storageAccountName,callback) {
+    var vmParameters = {
+        location: location,
+        osProfile: {
+            computerName: vmName,
+            adminUsername: adminUsername,
+            adminPassword: adminPassword
+        },
+        hardwareProfile: {
+            vmSize: 'Basic_A0'
+        },
+        storageProfile: {
+            imageReference: {
+                publisher: publisher,
+                offer: offer,
+                sku: sku,
+                version: vmImageVersionNumber
+            },
+            osDisk: {
+                name: osDiskName,
+                caching: 'None',
+                createOption: 'fromImage',
+                vhd: { uri: 'https://' + storageAccountName + '.blob.core.windows.net/nodejscontainer/osnodejslinux.vhd' }
+            },
+        },
+        networkProfile: {
+            networkInterfaces: [
+                {
+                    id: nicId,
+                    primary: true
+                }
+            ]
+        }
+    };
+    console.log('\n6.Creating Virtual Machine: ' + vmName);
+    console.log('\n VM create parameters: ' + util.inspect(vmParameters, { depth: null }));
+    computeClient.virtualMachines.createOrUpdate(resourceGroupName, vmName, vmParameters, callback);
 }
 
 
