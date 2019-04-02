@@ -88,7 +88,7 @@ app.post('/azure', function (req, response) {
 						 console.log("error in creating storage acocount", err);
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
-						 console.log("Storage accouint is created");
+						 console.log("Storage accouint is created",storageacc );
 						 response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
                           
                     }
