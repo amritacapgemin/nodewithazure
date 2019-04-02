@@ -52,7 +52,7 @@ var ipConfigName = _generateRandomId('testcrpip', randomIds);
 ///////////////////////////////////////////
 //     Entrypoint for sample script      //
 ///////////////////////////////////////////
-app.post('/azure', function (req, response) {
+app.post('/azure', function (req, responsedata) {
 
     msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials, subscriptions) {
         if (err) return console.log(err);
@@ -76,8 +76,9 @@ app.post('/azure', function (req, response) {
                         response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
                     }
                 }); 
-				break;
-			case "createstorageaccount":	
+				break;		
+			case "createstorageaccount":
+				responsedata.setHeader('Content-Type', 'application/json');			
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
@@ -85,10 +86,10 @@ app.post('/azure', function (req, response) {
 				createStorageAccount(storageAccountName,resourceGroupName, function (err, storageacc) {
                     if (err) {
 						 console.log("error in creating storage acocount", err);
-                       response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
+                       responsedata.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						 console.log("Storage accouint is created");
-						 response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
+						 responsedata.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name " +storageacc.name}));
                           
                     }
 					
