@@ -66,6 +66,7 @@ app.post('/azure', function (req, response) {
 		 response.setHeader('Content-Type', 'application/json');
 		
         switch (req.body.queryResult.intent.displayName) {
+			console.log("Display name " ,req.body.queryResult.intent.displayName )
            case "createresourceonazure":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
@@ -80,6 +81,7 @@ app.post('/azure', function (req, response) {
                  }); 
 				break;		
 			case "createstorageaccount":
+			console.log("hi");
 			var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
