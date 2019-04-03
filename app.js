@@ -74,7 +74,7 @@ app.post('/azure', function (req, response) {
                         console.log("error in creating resource acocount ");
 						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
-						console.log("hiii", result.name);
+						console.log("Here is result", result.name);
                         response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
                     }
                 }); 
@@ -260,8 +260,7 @@ app.post('/azure', function (req, response) {
             var vmName = getvmName.toString();
             computeClient.virtualMachines.start(resourceGroupName, vmName, function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',
-                    util.inspect(err, { depth: null })));
+                  console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',util.inspect(err, { depth: null })));
                     console.log(err);
                 } else {
                   console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',
@@ -273,8 +272,7 @@ app.post('/azure', function (req, response) {
 		case "listallvirtualmachine":        
             computeClient.virtualMachines.listAll(function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task5: while listing all the vms under ' +
-                     'the current subscription:\n%s', util.inspect(err, { depth: null })));
+                  console.log(util.format('\n???????Error in Task5: while listing all the vms under ' +'the current subscription:\n%s', util.inspect(err, { depth: null })));
                      console.log(err);
                 } else {
                   console.log(util.format('\n######End of Task5: List all the vms under the current ' +
