@@ -64,9 +64,9 @@ app.post('/azure', function (req, response) {
         storageClient = new StorageManagementClient(credentials, subscriptionId);
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
 		 response.setHeader('Content-Type', 'application/json');
-		
+		console.log("Display name ", req.body.queryResult.intent.displayName);
         switch (req.body.queryResult.intent.displayName) {
-			console.log("Display name ",req.body.queryResult.intent.displayName );
+			
            case "createresourceonazure":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
