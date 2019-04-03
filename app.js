@@ -65,8 +65,7 @@ app.post('/azure', function (req, response) {
         networkClient = new NetworkManagementClient(credentials, subscriptionId);
 		 response.setHeader('Content-Type', 'application/json');
 		console.log("Display name ", req.body.queryResult.intent.displayName);
-        switch (req.body.queryResult.intent.displayName) {
-			
+        switch (req.body.queryResult.intent.displayName) {			
            case "createresourceonazure":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
@@ -81,19 +80,7 @@ app.post('/azure', function (req, response) {
                  }); 
 				break;		
 			case "createstorageaccount":
-			console.log("hi");
-			var getResourceName = req.body.queryResult.parameters.resourcename;
-                var resourceGroupName = getResourceName.toString();
-                createResourceGroup(resourceGroupName, function (err, result) {
-                    if (err) {
-                        console.log("error in creating resource acocount ");
-						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
-                    } else {
-						console.log("Here is result", result.name);
-                        response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
-                    }
-                 }); 
-				/* response.setHeader('Content-Type', 'application/json');			
+			 response.setHeader('Content-Type', 'application/json');			
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
@@ -108,7 +95,7 @@ app.post('/azure', function (req, response) {
                           
                     }
 					
-                });  */
+                });
             break;
 			case "createvnet":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
