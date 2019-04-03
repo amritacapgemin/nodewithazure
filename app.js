@@ -77,10 +77,21 @@ app.post('/azure', function (req, response) {
 						console.log("Here is result", result.name);
                         response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
                     }
-                }); 
+                 }); 
 				break;		
 			case "createstorageaccount":
-				response.setHeader('Content-Type', 'application/json');			
+			var getResourceName = req.body.queryResult.parameters.resourcename;
+                var resourceGroupName = getResourceName.toString();
+                createResourceGroup(resourceGroupName, function (err, result) {
+                    if (err) {
+                        console.log("error in creating resource acocount ");
+						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
+                    } else {
+						console.log("Here is result", result.name);
+                        response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
+                    }
+                 }); 
+				/* response.setHeader('Content-Type', 'application/json');			
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
@@ -95,7 +106,7 @@ app.post('/azure', function (req, response) {
                           
                     }
 					
-                }); 
+                });  */
             break;
 			case "createvnet":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
