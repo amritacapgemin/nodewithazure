@@ -169,7 +169,7 @@ app.post('/azure', function (req, response) {
 						//response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
 					slack.send({				  
 						channel: 'azure',
-						text:  'Subnet information is here '+subnetInfo.name		
+						text:  'Subnet information is here '+ util.inspect(subnetInfo, { depth: null })	
 					}); 
                     }
                 });
@@ -215,7 +215,7 @@ app.post('/azure', function (req, response) {
                                 console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }))
 							slack.send({				  
 								channel: 'azure',
-								text:  'Network Interface is created with name '+nicInfo		
+								text:  'Network Interface is created with name '+ util.inspect(nicInfo, { depth: null })
 							});
                             };
                         });
@@ -254,7 +254,7 @@ app.post('/azure', function (req, response) {
                                     console.log('\nVM created\n'); }
 								slack.send({				  
 									channel: 'azure',
-									text:  'Virtual machine is created with name '+nicInfo		
+									text:  'Virtual machine is created with name '+ util.inspect(vmInfo, { depth: null })	
 								});
                             });
                           });
@@ -278,7 +278,7 @@ app.post('/azure', function (req, response) {
                 }
 				slack.send({				  
 					channel: 'azure',
-					text:  'Virtual machine information is here '+result		
+					text:  'Virtual machine information is here '+util.inspect(result, { depth: null })	
 				});
               });
             break;
@@ -293,12 +293,11 @@ app.post('/azure', function (req, response) {
                     util.inspect(err, { depth: null })));
                     console.log(err);
                 } else {
-                  console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',
-                    util.inspect(result, { depth: null })));
+                  console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',util.inspect(result, { depth: null })));
                     console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
-					text:  'Power off virtual machine name '+vmName		
+					text:  'Power off virtual machine name '+util.inspect(result, { depth: null })
 				});
                 }
               });
@@ -318,7 +317,7 @@ app.post('/azure', function (req, response) {
                     console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
-					text:  'Start virtual machine name '+vmName		
+					text:  'Start virtual machine name '+util.inspect(result, { depth: null })
 				});
                 }
               });
@@ -334,7 +333,7 @@ app.post('/azure', function (req, response) {
                     console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
-					text:  'Here is all list of virtual machine '+vmName		
+					text:  'Here is all list of virtual machine '+util.inspect(result, { depth: null })	
 				});
                 }
               });
