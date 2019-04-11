@@ -12,16 +12,16 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
 /**set port using env variable */
-/* var port = process.env.PORT || 3000;
+ var port = process.env.PORT || 3000;
 app.listen(port, "0.0.0.0", function () {
     console.log("Listening on --- Port 3000");
 });
- */
- var server = app.listen(3000, function () {
+ 
+/* var server = app.listen(3000, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Example app listening at http://%s:%s", host, port)
-})
+})*/
 
 /**pass incoming webhook to send messege to slack */
 var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
