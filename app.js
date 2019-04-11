@@ -12,11 +12,16 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
 /**set port using env variable */
-var port = process.env.PORT || 3000;
+/* var port = process.env.PORT || 3000;
 app.listen(port, "0.0.0.0", function () {
     console.log("Listening on --- Port 3000");
 });
-
+ */
+ var server = app.listen(3000, function () {
+  var host = server.address().address
+  var port = server.address().port
+  console.log("Example app listening at http://%s:%s", host, port)
+})
 
 /**pass incoming webhook to send messege to slack */
 var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
@@ -178,7 +183,7 @@ app.post('/azure', function (req, response) {
 						//response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
 					slack.send({				  
 						channel: 'azure',
-						text:  'Information of Vmimage '+vmImageInfo		
+						text:  'Information of Vmimage '+ util.inspect(vmImageInfo, { depth: null })	
 					});
                     }
                 });
@@ -235,13 +240,13 @@ app.post('/azure', function (req, response) {
                     if (err){console.log("error1", err)} else{ 
                     console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));} 
                     createPublicIP(resourceGroupName,publicIPName,function (err, publicIPInfo) {
-                        if (err){console.log("error1", err)} else{ 
+                        if (err){console.log("error2", err)} else{ 
                             console.log('\nCreated public IP:\n' + util.inspect(publicIPInfo, { depth: null }));} 
                       createNIC(subnetInfo, publicIPInfo,networkInterfaceName, resourceGroupName, function (err, nicInfo) {
-                        if (err){console.log("error1", err)} else{ 
+                        if (err){console.log("error3", err)} else{ 
                             console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }));} 
                         findVMImage(function (err, vmImageInfo) {
-                            if (err){console.log("error1", err)} else{ 
+                            if (err){console.log("error4", err)} else{ 
                                 console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null })); }
                              createVirtualMachine(nicInfo.id, vmImageInfo[0].name,resourceGroupName,vmName,storageAccountName, function (err, vmInfo) {
                                 console.log("one \n" +nicInfo.id+ " two\n " +vmImageInfo[0].name)
