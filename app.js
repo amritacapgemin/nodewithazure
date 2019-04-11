@@ -80,11 +80,10 @@ app.post('/azure', function (req, response) {
 						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
 						console.log("Here is result", result.name);
-                        //response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
-						
+                        //response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));						
 					slack.send({				  
 						channel: 'azure',
-						text:  'resource group is created'		
+						text:  'Resource group is created with name'+result.name		
 					}); 
 
                     }
