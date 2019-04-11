@@ -297,7 +297,7 @@ app.post('/azure', function (req, response) {
                     console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
-					text:  'Power off virtual machine name '+util.inspect(result, { depth: null })
+					text:  'Power off virtual machine name '+result.name
 				});
                 }
               });
@@ -317,7 +317,7 @@ app.post('/azure', function (req, response) {
                     console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
-					text:  'Start virtual machine name '+util.inspect(result, { depth: null })
+					text:  'Start virtual machine name '+result.name
 				});
                 }
               });
