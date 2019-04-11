@@ -83,7 +83,7 @@ app.post('/azure', function (req, response) {
                         //response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));						
 					slack.send({				  
 						channel: 'azure',
-						text:  'Resource group is created with name'+result.name		
+						text:  'Resource group is created with name '+result.name		
 					}); 
 
                     }
@@ -102,9 +102,9 @@ app.post('/azure', function (req, response) {
                     } else {
 						 console.log("Storage accouint is created",storageacc );
 						 //response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
-						 slack.send({				  
+					slack.send({				  
 						channel: 'azure',
-						text:  'Storage account is created'		
+						text:  'Storage account is created with name '+storageacc.name	
 					});                         
                     }
 					
@@ -122,7 +122,11 @@ app.post('/azure', function (req, response) {
                         response.send(JSON.stringify({ "fulfillmentText": "Error in creating virtual network" }));
                     } else {
                         console.log("Vnet is created",vnetInfo );
-						response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +vnetInfo.name }));
+						//response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +vnetInfo.name }));
+					slack.send({				  
+						channel: 'azure',
+						text:  'Virtual network is created with name '+vnetInfo.name		
+					}); 
                     }
                 });
                 break;
@@ -137,7 +141,11 @@ app.post('/azure', function (req, response) {
 						 response.send(JSON.stringify({ "fulfillmentText": "Error in creating public ip" }));
                     } else {
                         console.log("PublicIp is created" + util.inspect(publicIPInfo, { depth: null }));
-						response.send(JSON.stringify({ "fulfillmentText": "Public Ip is created successfully with name " +publicIPInfo.name }));
+						//response.send(JSON.stringify({ "fulfillmentText": "Public Ip is created successfully with name " +publicIPInfo.name }));
+					slack.send({				  
+						channel: 'azure',
+						text:  'Public ip is created with name '+publicIPInfo.name		
+					}); 
                     }
                 });
                 break;
@@ -153,7 +161,11 @@ app.post('/azure', function (req, response) {
                         response.send(JSON.stringify({ "fulfillmentText": "To get subnetinfo" }));
                     } else {
                         console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
-						response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
+						//response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
+					slack.send({				  
+						channel: 'azure',
+						text:  'Subnet information is here '+subnetInfo.name		
+					}); 
                     }
                 });
                 break;
@@ -163,7 +175,11 @@ app.post('/azure', function (req, response) {
                         console.log("error to fetch vmimage");
                     } else {
                         console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));
-						response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
+						//response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
+					slack.send({				  
+						channel: 'azure',
+						text:  'Information of Vmimage '+vmImageInfo		
+					});
                     }
                 });
                 break;
@@ -192,6 +208,10 @@ app.post('/azure', function (req, response) {
                                 console.log("error in info2")
                             } else {
                                 console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }))
+							slack.send({				  
+								channel: 'azure',
+								text:  'Network Interface is created with name '+nicInfo		
+							});
                             };
                         });
                     });
@@ -227,6 +247,10 @@ app.post('/azure', function (req, response) {
                                 console.log("one \n" +nicInfo.id+ " two\n " +vmImageInfo[0].name)
                                 if (err){console.log("error5", err)} else{ 
                                     console.log('\nVM created\n'); }
+								slack.send({				  
+									channel: 'azure',
+									text:  'Virtual machine is created with name '+nicInfo		
+								});
                             });
                           });
                         });
@@ -247,6 +271,10 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
                     console.log(null, result);
                 }
+				slack.send({				  
+					channel: 'azure',
+					text:  'Virtual machine information is here '+result		
+				});
               });
             break;
 		case "poweroffvirtualmachine":
@@ -263,6 +291,10 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',
                     util.inspect(result, { depth: null })));
                     console.log(null, result);
+				slack.send({				  
+					channel: 'azure',
+					text:  'Power off virtual machine name '+vmName		
+				});
                 }
               });
             break;
@@ -279,6 +311,10 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',
                     util.inspect(result, { depth: null })));
                     console.log(null, result);
+				slack.send({				  
+					channel: 'azure',
+					text:  'Start virtual machine name '+vmName		
+				});
                 }
               });
             break;
@@ -291,6 +327,10 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task5: List all the vms under the current ' +
                     'subscription is successful.\n%s', util.inspect(result, { depth: null })));
                     console.log(null, result);
+				slack.send({				  
+					channel: 'azure',
+					text:  'Here is all list of virtual machine '+vmName		
+				});
                 }
               });
             break;
