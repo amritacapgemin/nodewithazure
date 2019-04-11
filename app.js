@@ -18,6 +18,11 @@ app.listen(port, "0.0.0.0", function () {
 });
 
 
+/**pass incoming webhook to send messege to slack */
+var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
+
+
 var util = require('util');
 //var async = require('async');
 var msRestAzure = require('ms-rest-azure');
@@ -75,7 +80,13 @@ app.post('/azure', function (req, response) {
 						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
 						console.log("Here is result", result.name);
-                        response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
+                        //response.send(JSON.stringify({ "fulfillmentText": "Resource group is created successfully with name " +result.name}));
+						
+					slack.send({				  
+						channel: 'azurebot',
+						text:  'resource group is created'		
+					}); 
+
                     }
                  }); 
 				break;		
@@ -91,8 +102,11 @@ app.post('/azure', function (req, response) {
                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						 console.log("Storage accouint is created",storageacc );
-						 response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
-                          
+						 //response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
+						 slack.send({				  
+						channel: 'azurebot',
+						text:  'Storage account is created'		
+					});                         
                     }
 					
                 });
