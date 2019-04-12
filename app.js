@@ -12,12 +12,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
 /**set port using env variable */
- var port = process.env.PORT || 3000;
+  var port = process.env.PORT || 3000;
 app.listen(port, "0.0.0.0", function () {
     console.log("Listening on --- Port 3000");
 });
  
-/* var server = app.listen(3000, function () {
+/*var server = app.listen(3000, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Example app listening at http://%s:%s", host, port)
@@ -165,11 +165,12 @@ app.post('/azure', function (req, response) {
                     if (err) {
                         response.send(JSON.stringify({ "fulfillmentText": "To get subnetinfo" }));
                     } else {
-                        console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
+                        //console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
+						console.log("Subnet information...\n 1.Subnet name: " +subnetInfo.name+ "\n 2.Provision state: " +subnetInfo.provisioningState)
 						//response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
 					slack.send({				  
 						channel: 'azure',
-						text:  'Subnet information is here '+ util.inspect(subnetInfo, { depth: null })	
+						text:  "Subnet information...\n 1.Subnet name: " +subnetInfo.name+ "\n 2.Provision state: " +subnetInfo.provisioningState	
 					}); 
                     }
                 });
@@ -179,11 +180,11 @@ app.post('/azure', function (req, response) {
                     if (err) {
                         console.log("error to fetch vmimage");
                     } else {
-                        console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));
+                       //console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));	 
 						//response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
 					slack.send({				  
 						channel: 'azure',
-						text:  'Information of Vmimage '+ util.inspect(vmImageInfo, { depth: null })	
+						text:  "Vmimage information...\n 1.vmimage name: " +vmImageInfo[0].name+ "\n 2.ID: " +vmImageInfo[0].id+ "\n 3.Location: "+vmImageInfo[0].location
 					});
                     }
                 });
@@ -195,31 +196,30 @@ app.post('/azure', function (req, response) {
 				var vnetName =  getvnetName.toString();
                 var getsubnetName = req.body.queryResult.parameters.subnetname;
 				var subnetName = getsubnetName.toString();
-				
+				var publicIPName = _generateRandomId('testpip', randomIds);				
 				var getnetworkInterfaceName = req.body.queryResult.parameters.nicname;
 				var networkInterfaceName =  getnetworkInterfaceName.toString();
                
                 getSubnetInfo(resourceGroupName,vnetName, subnetName, function (err, subnetInfo) {
-                    if (err) { console.log("error in info") } else {
+                    if (err) { console.log("error in info",err) } else {
                         console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }))
                     };
                     createPublicIP(resourceGroupName,publicIPName, function (err, publicIPInfo) {
-                        if (err) { console.log("error in info1") } else {
+                        if (err) { console.log("error in info1",err) } else {
                             console.log('\nCreated public IP:\n' + util.inspect(publicIPInfo, { depth: null }))
                         };
                         createNIC(subnetInfo, publicIPInfo, networkInterfaceName, resourceGroupName, function (err, nicInfo) {
-                            console.log("data is here" + subnetInfo + " one " + publicIPInfo + " two " + ipConfigName + " three " + networkInterfaceName + " four " + resourceGroupName)
                             if (err) {
-                                console.log("error in info2")
+                                console.log("error in info2",err)
                             } else {
-                                console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }))
-							slack.send({				  
+                                //console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }))							
+							 slack.send({				  
 								channel: 'azure',
-								text:  'Network Interface is created with name '+ util.inspect(nicInfo, { depth: null })
+								text: "Created NIC information...\n 1.NIC name: " +nicInfo.name+ "\n 2.NIC type: " +nicInfo.type+ "\n 3.Location: "+nicInfo.location+ "\n 4.Ipconfiguration id "+nicInfo.ipConfigurations[0].id+"\n 5.Subnet id: "+nicInfo.ipConfigurations[0].subnet.id
 							});
                             };
                         });
-                    });
+                    }); 
                 });
                 break;
 			case "createvirtualmachine":
@@ -232,8 +232,7 @@ app.post('/azure', function (req, response) {
                 var subnetName = getsubnetName.toString();
 				var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
                 var storageAccountName = getstorageAccountName.toString();
-				var getnetworkInterfaceName = req.body.queryResult.parameters.networkinterfacename;
-                var networkInterfaceName = getnetworkInterfaceName.toString();
+                var networkInterfaceName = _generateRandomId('testnic', randomIds);
 				var getvmName = req.body.queryResult.parameters.virtualmachinename;
                 var vmName = getvmName.toString();
                 getSubnetInfo(resourceGroupName, vnetName, subnetName,function (err, subnetInfo) {
@@ -251,10 +250,11 @@ app.post('/azure', function (req, response) {
                              createVirtualMachine(nicInfo.id, vmImageInfo[0].name,resourceGroupName,vmName,storageAccountName, function (err, vmInfo) {
                                 console.log("one \n" +nicInfo.id+ " two\n " +vmImageInfo[0].name)
                                 if (err){console.log("error5", err)} else{ 
-                                    console.log('\nVM created\n'); }
+                                   console.log("Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.computerName);
+									}
 								slack.send({				  
 									channel: 'azure',
-									text:  'Virtual machine is created with name '+ util.inspect(vmInfo, { depth: null })	
+									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.computerName	
 								});
                             });
                           });
@@ -331,6 +331,7 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task5: List all the vms under the current ' +
                     'subscription is successful.\n%s', util.inspect(result, { depth: null })));
                     console.log(null, result);
+					console.log("Below is list of virtual machine. \n" +result[0].name+ "\n")
 				slack.send({				  
 					channel: 'azure',
 					text:  'Here is all list of virtual machine '+util.inspect(result, { depth: null })	
