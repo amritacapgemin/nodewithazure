@@ -254,7 +254,7 @@ app.post('/azure', function (req, response) {
 									}
 								slack.send({				  
 									channel: 'azure',
-									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.computerName	
+									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.osProfile.computerName	
 								});
                             });
                           });
@@ -275,10 +275,11 @@ app.post('/azure', function (req, response) {
                 } else {
                   console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
                     console.log(null, result);
+					console.log("Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "2.Type \n" +result.type+ "3.Location \n"+result.location);
                 }
 				slack.send({				  
 					channel: 'azure',
-					text:  'Virtual machine information is here '+util.inspect(result, { depth: null })	
+					text:  "Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "2.Type \n" +result.type+ "3.Location \n"+result.location	
 				});
               });
             break;
@@ -294,7 +295,6 @@ app.post('/azure', function (req, response) {
                     console.log(err);
                 } else {
                   console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',util.inspect(result, { depth: null })));
-                    console.log(null, result);
 				slack.send({				  
 					channel: 'azure',
 					text:  'Power off virtual machine name '+result.name
@@ -328,14 +328,12 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n???????Error in Task5: while listing all the vms under ' +'the current subscription:\n%s', util.inspect(err, { depth: null })));
                      console.log(err);
                 } else {
-                  console.log(util.format('\n######End of Task5: List all the vms under the current ' +
-                    'subscription is successful.\n%s', util.inspect(result, { depth: null })));
-                    console.log(null, result);
+                  console.log(util.format('\n######End of Task5: List all the vms under the current ' +'subscription is successful.\n%s', util.inspect(result, { depth: null })));
+                   console.log("Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ "2.Type \n" +result[0].type+ "3.Location \n"+result[0].location);
 					console.log("Below is list of virtual machine. \n" +result[0].name+ "\n")
 				slack.send({				  
 					channel: 'azure',
-					text:  'Here is all list of virtual machine '+util.inspect(result, { depth: null })	
-				});
+					text: "Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ "2.Type \n" +result[0].type+ "3.Location \n"+result[0].location
                 }
               });
             break;
