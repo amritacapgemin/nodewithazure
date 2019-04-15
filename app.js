@@ -248,11 +248,10 @@ app.post('/azure', function (req, response) {
                             if (err){console.log("error4", err)} else{ 
                                 console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null })); }
                              createVirtualMachine(nicInfo.id, vmImageInfo[0].name,resourceGroupName,vmName,storageAccountName, function (err, vmInfo) {
-                                console.log("one \n" +nicInfo.id+ " two\n " +vmImageInfo[0].name)
                                 if (err){console.log("error5", err)} else{ 
-                                   console.log("Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.computerName);
+                                   console.log("Created virtual machine information...\n 1.Virtual machine name: " +vmName);
 									}
-								slack.send({				  
+							    slack.send({				  
 									channel: 'azure',
 									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.osProfile.computerName	
 								});
@@ -333,7 +332,7 @@ app.post('/azure', function (req, response) {
 					console.log("Below is list of virtual machine. \n" +result[0].name+ "\n")
 				slack.send({				  
 					channel: 'azure',
-					text: "Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ "2.Type \n" +result[0].type+ "3.Location \n"+result[0].location
+					text: "Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ " \n2.Type:" +result[0].type+ "\n 3.Location: "+result[0].location
 					});
                 }
               });
