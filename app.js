@@ -334,6 +334,7 @@ app.post('/azure', function (req, response) {
 				slack.send({				  
 					channel: 'azure',
 					text: "Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ "2.Type \n" +result[0].type+ "3.Location \n"+result[0].location
+					});
                 }
               });
             break;
