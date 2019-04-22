@@ -81,7 +81,7 @@ app.post('/azure', function (req, response) {
                 var resourceGroupName = getResourceName.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
                     if (err) {
-                        console.log("error in creating resource acocount ");
+                        console.log("error in creating resource group",err);
 						response.send(JSON.stringify({ "fulfillmentText": "Error in creating resource group" }));
                     } else {
 						console.log("Here is result", result.name);
