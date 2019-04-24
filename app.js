@@ -24,7 +24,7 @@ var server = app.listen(3000, function () {
 })*/
 
 /**pass incoming webhook to send messege to slack */
-var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
 var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 
