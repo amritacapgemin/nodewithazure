@@ -331,7 +331,7 @@ app.post('/azure', function (req, response) {
                 }
               });
             break;
-		case "startvirtualmachine":
+		case "startvirtualmachine":     
             var getresourceGroupName = req.body.queryResult.parameters.resourcename;
             var resourceGroupName = getresourceGroupName.toString();
 			var getvmName = req.body.queryResult.parameters.virtualmachinename;
