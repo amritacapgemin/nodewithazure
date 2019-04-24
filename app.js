@@ -12,19 +12,19 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
 /**set port using env variable */
-  var port = process.env.PORT || 3000;
+ var port = process.env.PORT || 3000;
 app.listen(port, "0.0.0.0", function () {
     console.log("Listening on --- Port 3000");
 });
- 
-/*var server = app.listen(3000, function () {
+ /* 
+var server = app.listen(3000, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Example app listening at http://%s:%s", host, port)
 })*/
 
 /**pass incoming webhook to send messege to slack */
-var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
 var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 
@@ -42,6 +42,11 @@ var clientId = process.env['CLIENT_ID'];
 var domain = process.env['DOMAIN'];
 var secret = process.env['APPLICATION_SECRET'];
 var subscriptionId = process.env['AZURE_SUBSCRIPTION_ID'];
+
+console.log( "client",clientId);
+console.log("secreat",secret);
+console.log("domain",domain);
+console.log("subc",subscriptionId);
 var resourceClient, computeClient, storageClient, networkClient;
 //Sample Config
 var randomIds = {};
