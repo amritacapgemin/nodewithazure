@@ -266,7 +266,7 @@ app.post('/azure', function (req, response) {
                     console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));} 
                     createPublicIP(resourceGroupName,publicIPName,function (err, publicIPInfo) {
                         if (err){console.log("error2", err)} else{ 
-                            console.log('\nCreated public IP:\n' + util.inspect(publicIPInfo, { depth: null }));} 
+                            console.log('\nCreated public IP:\n' + util.inspect	(publicIPInfo, { depth: null }));} 
                       createNIC(subnetInfo, publicIPInfo,networkInterfaceName, resourceGroupName, function (err, nicInfo) {
                         if (err){console.log("error3", err)} else{ 
                             console.log('\nCreated Network Interface:\n' + util.inspect(nicInfo, { depth: null }));} 
@@ -305,7 +305,7 @@ app.post('/azure', function (req, response) {
                 }
 				slack.send({				  
 					channel: 'azure',
-					text:  "Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "2.Type \n" +result.type+ "3.Location \n"+result.location	
+					text:  "Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "\n 2.Type: " +result.type+ "\n 3.Location:"+result.location	
 				});
               });
             break;
@@ -326,7 +326,7 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',util.inspect(result, { depth: null })));
 				slack.send({				  
 					channel: 'azure',
-					text:  'Power off virtual machine name '+result.name
+					text:  'Power off virtual machine name '+vmName
 				});
                 }
               });
@@ -347,7 +347,7 @@ app.post('/azure', function (req, response) {
                   console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',util.inspect(result, { depth: null })));
 				slack.send({				  
 					channel: 'azure',
-					text:  'Start virtual machine name '+result.name
+					text:  'Start virtual machine name '+vmName
 				});
                 }
               });
