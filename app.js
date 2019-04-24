@@ -108,7 +108,11 @@ app.post('/azure', function (req, response) {
 				createStorageAccount(storageAccountName,resourceGroupName, function (err, storageacc) {
                     if (err) {
 						 console.log("error in creating storage acocount", err);
-                       response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
+						slack.send({				  
+							channel: 'azure',
+							text:  "Error in creating Storage account"
+					   });  
+                       //response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
                     } else {
 						 console.log("Storage accouint is created",storageacc );
 						 //response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
@@ -129,7 +133,12 @@ app.post('/azure', function (req, response) {
                 var subnetName = getsubnetName.toString();
                 createVnet(resourceGroupName, vnetName, subnetName, function (err, vnetInfo) {
                     if (err) {
-                        response.send(JSON.stringify({ "fulfillmentText": "Error in creating virtual network" }));
+						console.log(err)
+                        //response.send(JSON.stringify({ "fulfillmentText": "Error in creating virtual network" }));
+						slack.send({				  
+							channel: 'azure',
+							text:  "Error in creating virtual network"
+					   }); 
                     } else {
                         console.log("Vnet is created",vnetInfo );
 						//response.send(JSON.stringify({ "fulfillmentText": "Vitual network is created successfully with name " +vnetInfo.name }));
@@ -147,8 +156,12 @@ app.post('/azure', function (req, response) {
                 var publicIPName = getPublicipName.toString();
                 createPublicIP(resourceGroupName,publicIPName, function (err, publicIPInfo) {
                     if (err) {
-                        console.log("error in creating publicip");
-						 response.send(JSON.stringify({ "fulfillmentText": "Error in creating public ip" }));
+                        console.log("error in creating publicip",err);
+						slack.send({				  
+							channel: 'azure',
+							text:  "error in creating publicip"
+					   }); 
+						// response.send(JSON.stringify({ "fulfillmentText": "Error in creating public ip" }));
                     } else {
                         console.log("PublicIp is created" + util.inspect(publicIPInfo, { depth: null }));
 						//response.send(JSON.stringify({ "fulfillmentText": "Public Ip is created successfully with name " +publicIPInfo.name }));
@@ -168,10 +181,14 @@ app.post('/azure', function (req, response) {
                 var subnetName = getsubnetName.toString();
                 getSubnetInfo(resourceGroupName,vnetName,subnetName, function (err, subnetInfo) {
                     if (err) {
-                        response.send(JSON.stringify({ "fulfillmentText": "To get subnetinfo" }));
+						console.log(err)
+						slack.send({				  
+							channel: 'azure',
+							text:  "Error in getting subnet information"
+					   }); 
+                        //response.send(JSON.stringify({ "fulfillmentText": "To get subnetinfo" }));
                     } else {
-                        //console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
-						console.log("Subnet information...\n 1.Subnet name: " +subnetInfo.name+ "\n 2.Provision state: " +subnetInfo.provisioningState)
+                        console.log('\nFound subnet:\n' + util.inspect(subnetInfo, { depth: null }));
 						//response.send(JSON.stringify({ "fulfillmentText": "Subnet name is  " +publicIPInfo.name }));
 					slack.send({				  
 						channel: 'azure',
@@ -183,9 +200,13 @@ app.post('/azure', function (req, response) {
 			case "findVMImage":
 				findVMImage(function (err, vmImageInfo) {
                     if (err) {
-                        console.log("error to fetch vmimage");
+                        console.log("error to fetch vmimage",err);
+						slack.send({				  
+							channel: 'azure',
+							text:  "Error to get vmimage information"
+					   }); 
                     } else {
-                       //console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));	 
+                       console.log('\nFound Vm Image:\n' + util.inspect(vmImageInfo, { depth: null }));	 
 						//response.send(JSON.stringify({ "fulfillmentText": "Vm image info here: " +vmImageInfo.name+ " and location is " +vmImageInfo.location}));
 					slack.send({				  
 						channel: 'azure',
@@ -273,13 +294,14 @@ app.post('/azure', function (req, response) {
             var vmName = getvmName.toString();
             computeClient.virtualMachines.get(resourceGroupName, vmName, function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task2: while getting the VM Info:\n%s',
-                    util.inspect(err, { depth: null })));
-                    console.log(err);
+                  console.log(util.format('\n???????Error in Task2: while getting the VM Info:\n%s',util.inspect(err, { depth: null })));
+				  slack.send({				  
+					channel: 'azure',
+					text:  'Error in getting virtual machine information'	
+				});
+                   
                 } else {
                   console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
-                    console.log(null, result);
-					console.log("Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "2.Type \n" +result.type+ "3.Location \n"+result.location);
                 }
 				slack.send({				  
 					channel: 'azure',
@@ -294,9 +316,12 @@ app.post('/azure', function (req, response) {
             var vmName = getvmName.toString();
             computeClient.virtualMachines.powerOff(resourceGroupName, vmName, function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task3: while powering off the VM:\n%s',
-                    util.inspect(err, { depth: null })));
-                    console.log(err);
+					console.log(util.format('\n???????Error in Task3: while powering off the VM:\n%s',util.inspect(err, { depth: null })));
+				slack.send({				  
+					channel: 'azure',
+					text:  'Error in power off virtual machine'
+				});
+                    
                 } else {
                   console.log(util.format('\n######End of Task3: Poweroff the VM is successful.\n%s',util.inspect(result, { depth: null })));
 				slack.send({				  
@@ -313,12 +338,13 @@ app.post('/azure', function (req, response) {
             var vmName = getvmName.toString();
             computeClient.virtualMachines.start(resourceGroupName, vmName, function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',util.inspect(err, { depth: null })));
-                    console.log(err);
+					console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',util.inspect(err, { depth: null })));
+				slack.send({				  
+					channel: 'azure',
+					text:  'Error in start virtual machine'
+				});
                 } else {
-                  console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',
-                    util.inspect(result, { depth: null })));
-                    console.log(null, result);
+                  console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',util.inspect(result, { depth: null })));
 				slack.send({				  
 					channel: 'azure',
 					text:  'Start virtual machine name '+result.name
@@ -329,11 +355,13 @@ app.post('/azure', function (req, response) {
 		case "listallvirtualmachine":        
             computeClient.virtualMachines.listAll(function (err, result) {
                 if (err) {
-                  console.log(util.format('\n???????Error in Task5: while listing all the vms under ' +'the current subscription:\n%s', util.inspect(err, { depth: null })));
-                     console.log(err);
+                    console.log(err);
+					slack.send({				  
+						channel: 'azure',
+						text:  "Error in getting to list all virtual machine "
+					}); 
                 } else {
                   console.log(util.format('\n######End of Task5: List all the vms under the current ' +'subscription is successful.\n%s', util.inspect(result, { depth: null })));
-                   console.log("Virtual machine list ...\n 1.Virtual machine name: " +result[0].name+ "2.Type \n" +result[0].type+ "3.Location \n"+result[0].location);
 					console.log("Below is list of virtual machine. \n" +result[0].name+ "\n")
 				slack.send({				  
 					channel: 'azure',
