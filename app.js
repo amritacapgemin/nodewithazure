@@ -276,11 +276,12 @@ app.post('/azure', function (req, response) {
                              createVirtualMachine(nicInfo.id, vmImageInfo[0].name,resourceGroupName,vmName,storageAccountName, function (err, vmInfo) {
                                 if (err){console.log("error5", err)} else{ 
                                    console.log("Created virtual machine information...\n 1.Virtual machine name: " +vmName);
-									}
-							    slack.send({				  
+								   slack.send({				  
 									channel: 'azure',
 									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmImageInfo.osProfile.computerName	
 								});
+								}
+							    
                             });
                           });
                         });
@@ -301,12 +302,13 @@ app.post('/azure', function (req, response) {
 				});
                    
                 } else {
-                  console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
+                console.log(util.format('\n######End of Task2: Get VM Info is successful.\n%s',util.inspect(result, { depth: null })));
+					slack.send({				  
+						channel: 'azure',
+						text:  "Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "\n 2.Type: " +result.type+ "\n 3.Location:"+result.location	
+					});
                 }
-				slack.send({				  
-					channel: 'azure',
-					text:  "Virtual machine information ...\n 1.Virtual machine name: " +result.name+ "\n 2.Type: " +result.type+ "\n 3.Location:"+result.location	
-				});
+				
               });
             break;
 		case "poweroffvirtualmachine":
@@ -337,18 +339,18 @@ app.post('/azure', function (req, response) {
 			var getvmName = req.body.queryResult.parameters.virtualmachinename;
             var vmName = getvmName.toString();
             computeClient.virtualMachines.start(resourceGroupName, vmName, function (err, result) {
-                if (err) {
+                if (err) {	
 					console.log(util.format('\n???????Error in Task4: while starting the VM:\n%s',util.inspect(err, { depth: null })));
 				slack.send({				  
 					channel: 'azure',
 					text:  'Error in start virtual machine'
 				});
                 } else {
-                  console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',util.inspect(result, { depth: null })));
-				slack.send({				  
-					channel: 'azure',
-					text:  'Start virtual machine name '+vmName
-				});
+                console.log(util.format('\n######End of Task4: Start the VM is successful.\n%s',util.inspect(result, { depth: null })));
+					slack.send({				  
+						channel: 'azure',
+						text:  'Start virtual machine name '+vmName
+					});
                 }
               });
             break;
