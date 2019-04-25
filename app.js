@@ -278,7 +278,7 @@ app.post('/azure', function (req, response) {
                                    console.log("Created virtual machine information...\n 1.Virtual machine name: " +vmName);
 								   slack.send({				  
 									channel: 'azure',
-									text:  "Created virtual machine information...\n 1.Virtual machine name: " +vmName	
+									text:  "Virtual machine is created with name " +vmName	
 								});
 								}
 							    
