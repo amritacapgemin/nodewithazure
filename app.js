@@ -24,7 +24,7 @@ var server = app.listen(3000, function () {
 })*/
 
 /**pass incoming webhook to send messege to slack */
-var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+var MY_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
 var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 
@@ -82,7 +82,7 @@ app.post('/azure', function (req, response) {
 		console.log("Display name ", req.body.queryResult.intent.displayName);
 		
         switch (req.body.queryResult.intent.displayName) {			
-           case "createresourceonazure":	
+			case "createresourceonazure":	
 				var getResourceName = req.body.queryResult.parameters.resourcename;
                 var resourceGroupName = getResourceName.toString();
                 createResourceGroup(resourceGroupName, function (err, result) {
@@ -99,7 +99,32 @@ app.post('/azure', function (req, response) {
 
                     }
                  }); 
-				break;		
+				break;
+			case "createstorageaccount":
+				 response.setHeader('Content-Type', 'application/json');			
+					var getResourceName = req.body.queryResult.parameters.resourcename;
+					var resourceGroupName = getResourceName.toString();
+					var getstorageAccountName = req.body.queryResult.parameters.storageaccountname;
+					var storageAccountName = getstorageAccountName.toString();
+					createStorageAccount(storageAccountName,resourceGroupName, function (err, storageacc) {
+						if (err) {
+							 console.log("error in creating storage acocount", err);
+							slack.send({				  
+								channel: 'azure',
+								text:  "Error in creating Storage account"
+						   });  
+						   //response.send(JSON.stringify({ "fulfillmentText": "Error in creating storage account" }));
+						} else {
+							 console.log("Storage accouint is created",storageacc );
+							 //response.send(JSON.stringify({ "fulfillmentText": "Storage account is created successfully with name "}));
+						slack.send({				  
+							channel: 'azure',
+							text:  'Storage account is created with name '+storageacc.name	
+						});                         
+						}
+						
+					});
+            break;				
 		
         }
     });
@@ -109,6 +134,22 @@ function createResourceGroup(resourceGroupName, callback) {
     var groupParameters = { location: location, tags: { sampletag: 'sampleValue' } };
     console.log('\n1.Creating resource group: ' + resourceGroupName);
     return resourceClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters, callback);
+}
+/**Function to create storage account name*/
+function createStorageAccount(storageAccountName, resourceGroupName, callback) {
+    console.log('\n2.Creating storage account: ' + storageAccountName);
+    var createParameters = {
+        location: location,
+        sku: {
+            name: accType,
+        },
+        kind: 'Storage',
+        tags: {
+            tag1: 'val1',
+            tag2: 'val2'
+        }
+    };
+    return storageClient.storageAccounts.create(resourceGroupName, storageAccountName, createParameters, callback);
 }
 
 
